@@ -1,6 +1,7 @@
 import Foundation
 import AVFoundation
 import MediaPlayer
+import UIKit
 import Combine
 
 /// 播放能力：AVPlayer + 系统媒体控制（对应 Alger 的 Audio 元素 + MediaSession）。
@@ -33,6 +34,7 @@ final class PlayerManager: ObservableObject {
     let avPlayer = AVPlayer()
     private var timeToken: Any?
     private var endObserver: NSObjectProtocol?
+    private var artworkCache: [Int: MPMediaItemArtwork] = [:]
     private var loadGen = 0
     private var pendingSeek: Double?
 
@@ -280,8 +282,32 @@ final class PlayerManager: ObservableObject {
             MPNowPlayingInfoPropertyIsLiveStream: false,
         ]
         info[MPMediaItemPropertyPlaybackDuration] = Double(song.dt ?? 0) / 1000
+        if let cached = artworkCache[song.id] {
+            info[MPMediaItemPropertyArtwork] = cached
+        }
         MPNowPlayingInfoCenter.default().nowPlayingInfo = info
         MPNowPlayingInfoCenter.default().playbackState = isPlaying ? .playing : .paused
+        if artworkCache[song.id] == nil { fetchArtwork(for: song) }
+    }
+
+    /// 锁屏/控制中心封面：下载专辑图并注入 nowPlayingInfo（按歌曲缓存）
+    private func fetchArtwork(for song: Song) {
+        guard var s = song.coverURL else { return }
+        if s.hasPrefix("http://") { s = "https://" + s.dropFirst(7) }
+        s += (s.contains("?") ? "&" : "?") + "param=500y500"
+        guard let url = URL(string: s) else { return }
+        Task { [weak self] in
+            guard let (data, _) = try? await URLSession.shared.data(from: url),
+                  let img = UIImage(data: data) else { return }
+            let art = MPMediaItemArtwork(boundsSize: img.size) { _ in img }
+            await MainActor.run {
+                guard let self else { return }
+                self.artworkCache[song.id] = art
+                if self.current?.id == song.id {
+                    MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyArtwork] = art
+                }
+            }
+        }
     }
     private func updateNowPlayingPosition() {
         guard MPNowPlayingInfoCenter.default().nowPlayingInfo != nil else { return }
