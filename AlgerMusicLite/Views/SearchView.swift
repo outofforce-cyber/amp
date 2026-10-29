@@ -53,7 +53,7 @@ struct SearchView: View {
             if let errorText { Text(errorText).foregroundStyle(.secondary) }
             ForEach(Array(songs.enumerated()), id: \.element.id) { i, s in
                 SongRow(song: s, rank: nil) {
-                    PlayerManager.shared.playQueue(songs, at: i)
+                    PlayerManager.shared.playQueue(songs, at: i, from: "搜索「\(keyword.trimmingCharacters(in: .whitespacesAndNewlines))」")
                 }
             }
             if songs.count > offset { loadMoreButton }

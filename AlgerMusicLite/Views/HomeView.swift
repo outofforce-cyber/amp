@@ -41,7 +41,7 @@ struct HomeView: View {
                     }
                     ForEach(Array(songs.enumerated()), id: \.element.id) { i, s in
                         SongRow(song: s, rank: dailyMode ? nil : i + 1) {
-                            PlayerManager.shared.playQueue(songs, at: i)
+                            PlayerManager.shared.playQueue(songs, at: i, from: currentSourceName)
                         }
                     }
                 }
@@ -100,6 +100,11 @@ struct HomeView: View {
     private var shortName: String {
         let n = (account.profile?.nickname ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
         return n.isEmpty ? "已登录" : String(n.prefix(8))
+    }
+
+    private var currentSourceName: String {
+        if dailyMode { return "每日推荐" }
+        return charts.first(where: { $0.id == selectedChartID })?.name ?? "热歌榜"
     }
 
     private func chip(title: String, on: Bool, action: @escaping () -> Void) -> some View {

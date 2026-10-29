@@ -60,7 +60,7 @@ struct FavoriteView: View {
                     }
                     ForEach(Array(songs.enumerated()), id: \.element.id) { i, s in
                         SongRow(song: s, rank: nil) {
-                            PlayerManager.shared.playQueue(songs, at: i)
+                            PlayerManager.shared.playQueue(songs, at: i, from: "我喜欢的音乐")
                         }
                         .swipeActions {
                             Button(role: .destructive) {

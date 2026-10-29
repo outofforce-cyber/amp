@@ -85,7 +85,7 @@ struct PlaylistDetailView: View {
                 List {
                     ForEach(Array(pl.songs.enumerated()), id: \.element.id) { i, s in
                         SongRow(song: s, rank: nil) {
-                            PlayerManager.shared.playQueue(pl.songs, at: i)
+                            PlayerManager.shared.playQueue(pl.songs, at: i, from: "歌单「\(pl.name)」")
                         }
                         .swipeActions(edge: .trailing) {
                             Button(role: .destructive) {
@@ -99,11 +99,11 @@ struct PlaylistDetailView: View {
                 .toolbar {
                     ToolbarItemGroup(placement: .topBarTrailing) {
                         Button {
-                            PlayerManager.shared.playQueue(pl.songs, at: 0)
+                            PlayerManager.shared.playQueue(pl.songs, at: 0, from: "歌单「\(pl.name)」")
                         } label: { Image(systemName: "play.circle") }
                         .disabled(pl.songs.isEmpty)
                         Button {
-                            PlayerManager.shared.playQueue(pl.songs, at: Int.random(in: 0..<pl.songs.count))
+                            PlayerManager.shared.playQueue(pl.songs, at: Int.random(in: 0..<pl.songs.count), from: "歌单「\(pl.name)」")
                         } label: { Image(systemName: "shuffle.circle") }
                         .disabled(pl.songs.isEmpty)
                         Menu {

@@ -13,7 +13,14 @@ struct MiniPlayerBar: View {
                             .frame(width: 46, height: 46).clipShape(RoundedRectangle(cornerRadius: 8))
                         VStack(alignment: .leading, spacing: 2) {
                             Text(song.title).font(.body).lineLimit(1)
-                            Text(song.artistName).font(.caption).foregroundStyle(.secondary).lineLimit(1)
+                            HStack(spacing: 4) {
+                                Text(song.artistName).font(.caption).foregroundStyle(.secondary).lineLimit(1)
+                                if !player.queueSource.isEmpty {
+                                    Text("· \(player.queueSource)")
+                                        .font(.caption2).foregroundStyle(.tertiary)
+                                        .lineLimit(1).truncationMode(.tail)
+                                }
+                            }
                         }
                         Spacer(minLength: 6)
                     }
@@ -75,7 +82,11 @@ struct PlayerSheet: View {
                     HStack {
                         Button { dismiss() } label: { Image(systemName: "chevron.down") }
                         Spacer()
-                        Text("正在播放").font(.caption).foregroundStyle(.secondary)
+                        Text(player.queueSource.isEmpty
+                             ? "正在播放"
+                             : "正在播放 · \(player.queueSource)")
+                            .font(.caption).foregroundStyle(.secondary)
+                            .lineLimit(1).truncationMode(.middle)
                         Spacer()
                         if song.hasMV {
                             Button { MVPresenter.shared.open(id: song.mv!, title: song.title) } label: {
@@ -138,7 +149,8 @@ struct PlayerSheet: View {
         switch player.playMode {
         case .sequential: return "list.number"
         case .shuffle: return "shuffle"
-        case .repeatOne: return "repeat"
+        case .repeatOne: return "repeat.1"
+        case .listLoop: return "repeat"
         }
     }
 

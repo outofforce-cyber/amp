@@ -164,7 +164,8 @@ struct LyricOverlay: View {
                         }
                         Spacer()
                         Button {
-                            PlayerManager.shared.playQueue([song], at: 0)
+                            PlayerManager.shared.playQueue([song], at: 0,
+                                from: PlayerManager.shared.queueSource)
                         } label: {
                             Image(systemName: "play.circle").font(.title3).foregroundStyle(.white)
                         }
@@ -185,7 +186,9 @@ struct LyricOverlay: View {
                                             .foregroundStyle(i == currentIndex ? .white : .white.opacity(0.45))
                                             .id(i)
                                             .onTapGesture {
-                                                PlayerManager.shared.playQueue([song], at: 0, startOffset: line.time)
+                                                PlayerManager.shared.playQueue([song], at: 0,
+                                                    startOffset: line.time,
+                                                    from: PlayerManager.shared.queueSource)
                                             }
                                     }
                                 }

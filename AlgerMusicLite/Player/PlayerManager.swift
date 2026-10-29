@@ -9,16 +9,18 @@ import Combine
 final class PlayerManager: ObservableObject {
     static let shared = PlayerManager()
 
-    enum PlayMode: Int { case sequential = 0, shuffle = 1, repeatOne = 2 }
+    enum PlayMode: Int { case sequential = 0, shuffle = 1, repeatOne = 2, listLoop = 3 }
     var modeName: String {
         switch playMode {
         case .sequential: return "顺序播放"
         case .shuffle: return "随机播放"
         case .repeatOne: return "单曲循环"
+        case .listLoop: return "列表循环"
         }
     }
 
     @Published private(set) var current: Song?
+    @Published private(set) var queueSource: String = ""   // 当前队列来源（榜单/歌单/收藏…）
     @Published private(set) var queue: [Song] = []
     @Published private(set) var index: Int = 0
     @Published var isPlaying = false
@@ -65,16 +67,17 @@ final class PlayerManager: ObservableObject {
 
     // MARK: - queue
 
-    func playQueue(_ list: [Song], at start: Int, startOffset: Double? = nil) {
+    func playQueue(_ list: [Song], at start: Int, startOffset: Double? = nil, from source: String = "") {
         guard start < list.count else { return }
         queue = list
         index = start
+        queueSource = source
         pendingSeek = startOffset
         loadCurrent(retries: 1)
     }
 
-    func play(_ song: Song) {
-        playQueue([song], at: 0)
+    func play(_ song: Song, from source: String = "") {
+        playQueue([song], at: 0, from: source)
     }
 
     func toggle() { isPlaying ? pause() : resume() }
@@ -93,7 +96,7 @@ final class PlayerManager: ObservableObject {
     }
 
     func cyclePlayMode() {
-        let nextMode = PlayMode(rawValue: (playMode.rawValue + 1) % 3) ?? .sequential
+        let nextMode = PlayMode(rawValue: (playMode.rawValue + 1) % 4) ?? .sequential
         playMode = nextMode
         UserDefaults.standard.set(nextMode.rawValue, forKey: "ncm.playMode")
         notice = "播放模式：\(modeName)"
@@ -115,6 +118,9 @@ final class PlayerManager: ObservableObject {
             seek(0)
             avPlayer.play()
             isPlaying = true
+        case .listLoop:
+            index = (index + 1) % queue.count   // 到末尾回到第一首，无限循环
+            loadCurrent(retries: 1)
         default:
             if index + 1 < queue.count {
                 index += 1

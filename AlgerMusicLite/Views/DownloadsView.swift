@@ -58,7 +58,7 @@ struct DownloadsView: View {
                 Image(systemName: "text.bubble").foregroundStyle(.secondary)
             }
             Button {
-                PlayerManager.shared.playQueue(store.records.map { $0.song }, at: i)
+                PlayerManager.shared.playQueue(store.records.map { $0.song }, at: i, from: "本地下载")
             } label: {
                 Image(systemName: "play.circle.fill").font(.title2)
             }
@@ -70,7 +70,7 @@ struct DownloadsView: View {
         }
         .contentShape(Rectangle())
         .onTapGesture {
-            PlayerManager.shared.playQueue(store.records.map { $0.song }, at: i)
+            PlayerManager.shared.playQueue(store.records.map { $0.song }, at: i, from: "本地下载")
         }
     }
 
