@@ -1,0 +1,359 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 70;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AC00000000000000000000BA /* AlgerMusicLiteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC00000000000000000000B9 /* AlgerMusicLiteTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		AC00000000000000000000BC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AC0000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AC0000000000000000000003;
+			remoteInfo = AlgerMusicLite;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		AC00000000000000000000B7 /* AlgerMusicLiteTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AlgerMusicLiteTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		AC00000000000000000000B9 /* AlgerMusicLiteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlgerMusicLiteTests.swift; sourceTree = "<group>"; };
+		AC00000000000000000000F0 /* AlgerMusicLite.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AlgerMusicLite.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		AC00000000000000000000A0 /* AlgerMusicLite */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = AlgerMusicLite; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		AC0000000000000000000010 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AC00000000000000000000B6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		AC0000000000000000000004 = {
+			isa = PBXGroup;
+			children = (
+				AC00000000000000000000A0 /* AlgerMusicLite */,
+				AC00000000000000000000B8 /* AlgerMusicLiteTests */,
+				AC0000000000000000000009 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		AC0000000000000000000009 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AC00000000000000000000F0 /* AlgerMusicLite.app */,
+				AC00000000000000000000B7 /* AlgerMusicLiteTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AC00000000000000000000B8 /* AlgerMusicLiteTests */ = {
+			isa = PBXGroup;
+			children = (
+				AC00000000000000000000B9 /* AlgerMusicLiteTests.swift */,
+			);
+			path = AlgerMusicLiteTests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		AC0000000000000000000003 /* AlgerMusicLite */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AC0000000000000000000006 /* Build configuration list for PBXNativeTarget "AlgerMusicLite" */;
+			buildPhases = (
+				AC0000000000000000000005 /* Sources */,
+				AC0000000000000000000007 /* Resources */,
+				AC0000000000000000000010 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				AC00000000000000000000A0 /* AlgerMusicLite */,
+			);
+			name = AlgerMusicLite;
+			packageProductDependencies = (
+			);
+			productName = AlgerMusicLite;
+			productReference = AC00000000000000000000F0 /* AlgerMusicLite.app */;
+			productType = "com.apple.product-type.application";
+		};
+		AC00000000000000000000B0 /* AlgerMusicLiteTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AC00000000000000000000B1 /* Build configuration list for PBXNativeTarget "AlgerMusicLiteTests" */;
+			buildPhases = (
+				AC00000000000000000000B4 /* Sources */,
+				AC00000000000000000000B5 /* Resources */,
+				AC00000000000000000000B6 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				AC00000000000000000000BB /* PBXTargetDependency */,
+			);
+			name = AlgerMusicLiteTests;
+			packageProductDependencies = (
+			);
+			productName = AlgerMusicLiteTests;
+			productReference = AC00000000000000000000B7 /* AlgerMusicLiteTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AC0000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					AC0000000000000000000003 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+					AC00000000000000000000B0 = {
+						CreatedOnToolsVersion = 16.0;
+						TestTargetID = AC0000000000000000000003;
+					};
+				};
+			};
+			buildConfigurationList = AC0000000000000000000002 /* Build configuration list for PBXProject "AlgerMusicLite" */;
+			compatibilityVersion = "Xcode 15.0";
+			developmentRegion = zh_CN;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				zh_CN,
+				Base,
+			);
+			mainGroup = AC0000000000000000000004;
+			minimizedProjectReferenceProxies = 1;
+			productRefGroup = AC0000000000000000000009 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				AC0000000000000000000003 /* AlgerMusicLite */,
+				AC00000000000000000000B0 /* AlgerMusicLiteTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		AC0000000000000000000007 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AC00000000000000000000B5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AC0000000000000000000005 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AC00000000000000000000B4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AC00000000000000000000BA /* AlgerMusicLiteTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		AC00000000000000000000BB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AC0000000000000000000003 /* AlgerMusicLite */;
+			targetProxy = AC00000000000000000000BC /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		AC0000000000000000000011 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		AC0000000000000000000012 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		AC0000000000000000000013 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 9LY6UJVR25;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.outofforce.algermusiclite;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		AC0000000000000000000014 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 9LY6UJVR25;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.outofforce.algermusiclite;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		AC00000000000000000000B2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 9LY6UJVR25;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.outofforce.algermusiclite.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AlgerMusicLite.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AlgerMusicLite";
+			};
+			name = Debug;
+		};
+		AC00000000000000000000B3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 9LY6UJVR25;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.outofforce.algermusiclite.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AlgerMusicLite.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AlgerMusicLite";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		AC0000000000000000000002 /* Build configuration list for PBXProject "AlgerMusicLite" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AC0000000000000000000011 /* Debug */,
+				AC0000000000000000000012 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AC0000000000000000000006 /* Build configuration list for PBXNativeTarget "AlgerMusicLite" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AC0000000000000000000013 /* Debug */,
+				AC0000000000000000000014 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AC00000000000000000000B1 /* Build configuration list for PBXNativeTarget "AlgerMusicLiteTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AC00000000000000000000B2 /* Debug */,
+				AC00000000000000000000B3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = AC0000000000000000000001 /* Project object */;
+}
