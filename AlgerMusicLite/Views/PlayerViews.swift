@@ -66,7 +66,7 @@ struct PlayerSheet: View {
     @Environment(\.dismiss) private var dismiss
     @State private var lyrics: [LyricLine] = []
     @State private var lyricCurrent = 0
-    @State private var scrubbing = false
+    @State private var scrubTarget: Double?      // 拖动进度条期间的目标位置
 
     var body: some View {
         if let song = player.current {
@@ -108,28 +108,47 @@ struct PlayerSheet: View {
 
     private func progressBar(_ song: Song) -> some View {
         let dur = player.duration > 0 ? player.duration : Double(song.dt ?? 0) / 1000
+        // 拖动中显示手指位置（不被定时刷新拉回），松手才 seek
+        let sliderValue = Binding<Double>(
+            get: { scrubTarget ?? player.currentTime },
+            set: { scrubTarget = $0 }
+        )
         return VStack(spacing: 2) {
             Slider(
-                value: Binding(
-                    get: { player.currentTime },
-                    set: { v in if !scrubbing { player.seek(v) } }
-                ),
+                value: sliderValue,
                 in: 0...max(dur, 0.1),
                 onEditingChanged: { editing in
-                    scrubbing = editing
-                    if !editing { player.seek(player.currentTime) }
+                    if editing {
+                        scrubTarget = player.currentTime
+                    } else if let t = scrubTarget {
+                        player.seek(t)
+                        scrubTarget = nil
+                    }
                 }
             )
             HStack {
-                Text(timeStr(player.currentTime)).font(.caption).monospacedDigit()
+                Text(timeStr(scrubTarget ?? player.currentTime)).font(.caption).monospacedDigit()
                 Spacer()
                 Text(timeStr(dur)).font(.caption).monospacedDigit()
             }
         }
     }
 
+    private var modeIcon: String {
+        switch player.playMode {
+        case .sequential: return "list.number"
+        case .shuffle: return "shuffle"
+        case .repeatOne: return "repeat"
+        }
+    }
+
     private var controls: some View {
-        HStack(spacing: 26) {
+        HStack(spacing: 18) {
+            Button { player.cyclePlayMode() } label: {
+                Image(systemName: modeIcon)
+                    .font(.title2)
+                    .foregroundStyle(player.playMode == .sequential ? Color.primary : Color.accentColor)
+            }
             Button {
                 Task { await DownloadStore.shared.download(player.current!) }
             } label: {
@@ -148,12 +167,12 @@ struct PlayerSheet: View {
                     .font(.title2)
                     .foregroundStyle(liked.contains(player.current!.id) ? .red : .primary)
             }
-            Button { player.previous() } label: { Image(systemName: "backward.fill").font(.title) }
+            Button { player.previous() } label: { Image(systemName: "backward.fill").font(.title2) }
             Button { player.toggle() } label: {
                 Image(systemName: player.isPlaying ? "pause.circle.fill" : "play.circle.fill")
-                    .font(.system(size: 56))
+                    .font(.system(size: 52))
             }
-            Button { player.next() } label: { Image(systemName: "forward.fill").font(.title) }
+            Button { player.next() } label: { Image(systemName: "forward.fill").font(.title2) }
         }
     }
 

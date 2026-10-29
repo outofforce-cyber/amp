@@ -9,6 +9,15 @@ import Combine
 final class PlayerManager: ObservableObject {
     static let shared = PlayerManager()
 
+    enum PlayMode: Int { case sequential = 0, shuffle = 1, repeatOne = 2 }
+    var modeName: String {
+        switch playMode {
+        case .sequential: return "顺序播放"
+        case .shuffle: return "随机播放"
+        case .repeatOne: return "单曲循环"
+        }
+    }
+
     @Published private(set) var current: Song?
     @Published private(set) var queue: [Song] = []
     @Published private(set) var index: Int = 0
@@ -17,13 +26,16 @@ final class PlayerManager: ObservableObject {
     @Published var duration: Double = 0
     @Published var notice: String?          // 不可播提示
     @Published var showSheet = false       // 全屏播放页
+    @Published private(set) var playMode: PlayMode = .sequential
 
     let avPlayer = AVPlayer()
     private var timeToken: Any?
+    private var endObserver: NSObjectProtocol?
     private var loadGen = 0
     private var pendingSeek: Double?
 
     private init() {
+        playMode = PlayMode(rawValue: UserDefaults.standard.integer(forKey: "ncm.playMode")) ?? .sequential
         try? AVAudioSession.sharedInstance().setCategory(.playback)
         try? AVAudioSession.sharedInstance().setActive(true)
         let rcc = MPRemoteCommandCenter.shared()
@@ -80,16 +92,57 @@ final class PlayerManager: ObservableObject {
         updateNowPlaying()
     }
 
+    func cyclePlayMode() {
+        let nextMode = PlayMode(rawValue: (playMode.rawValue + 1) % 3) ?? .sequential
+        playMode = nextMode
+        UserDefaults.standard.set(nextMode.rawValue, forKey: "ncm.playMode")
+        notice = "播放模式：\(modeName)"
+    }
+
+    private func randomOtherIndex() -> Int {
+        var r = Int.random(in: 0..<queue.count)
+        while r == index { r = Int.random(in: 0..<queue.count) }
+        return r
+    }
+
     func next() {
         guard !queue.isEmpty else { return }
-        index = (index + 1) % queue.count
-        loadCurrent(retries: 1)
+        switch playMode {
+        case .shuffle:
+            if queue.count > 1 { index = randomOtherIndex() }
+            loadCurrent(retries: 1)
+        case .repeatOne:
+            seek(0)
+            avPlayer.play()
+            isPlaying = true
+        default:
+            if index + 1 < queue.count {
+                index += 1
+                loadCurrent(retries: 1)
+            } else {
+                stop()          // 顺序播放到列表末尾：停止
+            }
+        }
     }
 
     func previous() {
         guard !queue.isEmpty else { return }
-        index = (index - 1 + queue.count) % queue.count
-        loadCurrent(retries: 1)
+        switch playMode {
+        case .shuffle:
+            if queue.count > 1 {
+                index = randomOtherIndex()
+                loadCurrent(retries: 1)
+            } else {
+                seek(0)
+            }
+        default:
+            if index > 0 {
+                index -= 1
+                loadCurrent(retries: 1)
+            } else {
+                seek(0)
+            }
+        }
     }
 
     func seek(_ t: Double) {
@@ -100,6 +153,7 @@ final class PlayerManager: ObservableObject {
 
     func stop() {
         removeTimeObserver()
+        if let o = endObserver { NotificationCenter.default.removeObserver(o); endObserver = nil }
         avPlayer.pause()
         avPlayer.replaceCurrentItem(with: nil)
         current = nil
@@ -168,11 +222,24 @@ final class PlayerManager: ObservableObject {
         avPlayer.play()
         isPlaying = true
         addTimeObserver(for: item)
+        watchItemEnd(item)
         if let t = pendingSeek {
             pendingSeek = nil
             seek(t)
         }
         updateNowPlaying()
+    }
+
+    /// 放完后的行为由播放模式决定（顺序到末尾会停止；随机切任意首；单曲循环重播）
+    private func watchItemEnd(_ item: AVPlayerItem) {
+        if let o = endObserver { NotificationCenter.default.removeObserver(o) }
+        endObserver = NotificationCenter.default.addObserver(
+            forName: .AVPlayerItemDidPlayToEndTime, object: item, queue: .main) { [weak self] _ in
+            Task { @MainActor in
+                guard let self, self.current != nil else { return }
+                self.next()
+            }
+        }
     }
 
     private func addTimeObserver(for item: AVPlayerItem) {

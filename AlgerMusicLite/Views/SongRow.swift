@@ -8,6 +8,8 @@ struct SongRow: View {
     @ObservedObject private var account = Account.shared
     @ObservedObject private var downloads = DownloadStore.shared
     @ObservedObject private var quality = QualityStore.shared
+    @ObservedObject private var playlists = PlaylistStore.shared
+    @State private var showAddTo = false
 
     var body: some View {
         HStack(spacing: 8) {
@@ -72,6 +74,11 @@ struct SongRow: View {
         .opacity(song.playableHeuristic ? 1 : 0.5)
         .contextMenu {
             Button {
+                showAddTo = true
+            } label: {
+                Label("添加到歌单", systemImage: "music.note.list")
+            }
+            Button {
                 Task { await DownloadStore.shared.download(song) }
             } label: {
                 Label {
@@ -86,6 +93,16 @@ struct SongRow: View {
             } label: {
                 Label("查看歌词", systemImage: "text.bubble")
             }
+        }
+        .confirmationDialog("添加到歌单", isPresented: $showAddTo, titleVisibility: .visible) {
+            ForEach(playlists.playlists) { p in
+                Button(p.name) { playlists.add(song, to: p.id) }
+            }
+            Button("新建歌单并添加") {
+                let p = playlists.create()
+                playlists.add(song, to: p.id)
+            }
+            Button("取消", role: .cancel) {}
         }
     }
 }

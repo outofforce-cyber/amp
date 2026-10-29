@@ -7,6 +7,7 @@ struct RootView: View {
     @StateObject private var mv = MVPresenter.shared
     @StateObject private var lyric = LyricPresenter.shared
     @StateObject private var downloads = DownloadStore.shared
+    @StateObject private var playlists = PlaylistStore.shared
 
     var body: some View {
         ZStack {
@@ -26,7 +27,7 @@ struct RootView: View {
             if lyric.song != nil {
                 LyricOverlay()
             }
-            if let notice = player.notice ?? downloads.message {
+            if let notice = player.notice ?? downloads.message ?? playlists.toast {
                 Text(notice)
                     .padding(.horizontal, 14).padding(.vertical, 8)
                     .background(.thinMaterial, in: Capsule())
@@ -60,5 +61,5 @@ struct RootView: View {
         }
     }
 
-    private func clearNotice() { player.notice = nil; downloads.message = nil }
+    private func clearNotice() { player.notice = nil; downloads.message = nil; playlists.toast = nil }
 }
