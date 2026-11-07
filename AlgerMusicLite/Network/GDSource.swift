@@ -12,22 +12,22 @@ enum GDSource {
 
     private static let base = "https://music-api.gdstudio.xyz/api.php"
 
-    /// 统一入口：先按 ID 直查，再按名字搜索
-    static func resolve(song: Song) async -> Media? {
-        if let m = await pyncmd(song.id) { return m }
-        return await gdmusic(song)
+    /// 统一入口：先按 ID 直查，再按名字搜索。br=999 最高（可能给 m3u8），320 更稳。
+    static func resolve(song: Song, br: Int = 999) async -> Media? {
+        if let m = await pyncmd(song.id, br: br) { return m }
+        return await gdmusic(song, br: br)
     }
 
     // MARK: - 1) pyncmd：同 ID 直查官方直链
 
-    private static func pyncmd(_ id: Int) async -> Media? {
-        guard let json = get("types=url&source=netease&id=\(id)&br=999") else { return nil }
+    private static func pyncmd(_ id: Int, br: Int) async -> Media? {
+        guard let json = await get("types=url&source=netease&id=\(id)&br=\(br)") else { return nil }
         return media(from: json)
     }
 
     // MARK: - 2) gdmusic：搜索 + 严格核对后换链
 
-    private static func gdmusic(_ song: Song) async -> Media? {
+    private static func gdmusic(_ song: Song, br: Int) async -> Media? {
         let songName = song.name ?? ""
         guard songName.count >= 2 else { return nil }
         let artists = (song.ar ?? []).compactMap { $0.name }.filter { !$0.isEmpty }
@@ -35,12 +35,12 @@ enum GDSource {
         let query = joined.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? joined
 
         for source in ["joox", "tidal", "netease"] {
-            guard let data = raw("types=search&source=\(source)&name=\(query)&count=5&pages=1"),
+            guard let data = await raw("types=search&source=\(source)&name=\(query)&count=5&pages=1"),
                   let arr = (try? JSONSerialization.jsonObject(with: data)) as? [[String: Any]],
                   let pick = pickBest(candidates: arr, name: songName, artists: artists),
                   let trackId = jsonID(pick["id"]) else { continue }
             let realSource = (pick["source"] as? String) ?? source
-            guard let json = get("types=url&source=\(realSource)&id=\(trackId)&br=999") else { continue }
+            guard let json = await get("types=url&source=\(realSource)&id=\(trackId)&br=\(br)") else { continue }
             if let m = media(from: json) { return m }
         }
         return nil
@@ -98,24 +98,19 @@ enum GDSource {
 
     // MARK: - HTTP helpers
 
-    private static func get(_ query: String) -> [String: Any]? {
-        guard let data = raw(query),
+    private static func get(_ query: String) async -> [String: Any]? {
+        guard let data = await raw(query),
               let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else { return nil }
         return obj
     }
 
-    private static func raw(_ query: String) -> Data? {
+    private static func raw(_ query: String) async -> Data? {
         guard let url = URL(string: "\(base)?\(query)") else { return nil }
         var req = URLRequest(url: url, timeoutInterval: 10)
         req.setValue("Mozilla/5.0 (iPhone; CPU iPhone OS 16_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1", forHTTPHeaderField: "User-Agent")
-        let sem = DispatchSemaphore(value: 0)
-        var out: Data?
-        URLSession.shared.dataTask(with: req) { d, resp, _ in
-            if let h = resp as? HTTPURLResponse, h.statusCode == 200 { out = d }
-            sem.signal()
-        }.resume()
-        _ = sem.wait(timeout: .now() + 12)
-        return out
+        guard let (data, resp) = try? await URLSession.shared.data(for: req),
+              (resp as? HTTPURLResponse)?.statusCode == 200 else { return nil }
+        return data
     }
 
     private static func jsonID(_ v: Any?) -> String? {

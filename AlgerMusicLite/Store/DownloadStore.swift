@@ -75,17 +75,14 @@ final class DownloadStore: ObservableObject {
             message = "《\(song.title)》无免费下载源（可能需要 VIP/登录）"
             return
         }
-        // 兜底源可能给 m3u8（网易的单段 HLS 伪列表）：解出真实音频直链再落盘
         var u = u0, fmt = fmt0
+        // 兜底源可能给 m3u8（网易常用单段 HLS 伪列表）：解出真实音频直链再落盘
         if fmt == "m3u8" {
-            if let (data, _) = try? await URLSession.shared.data(from: u),
-               let text = String(data: data, encoding: .utf8),
-               let line = text.split(separator: "\n").map({ $0.trimmingCharacters(in: .whitespaces) })
-                   .first(where: { !$0.isEmpty && !$0.hasPrefix("#") }),
-               let audio = URL(string: line) {
-                u = audio
-                let ext = audio.pathExtension.lowercased()
-                fmt = ["mp3", "m4a", "flac", "wav"].contains(ext) ? ext : "mp3"
+            if let real = await Self.unwrapHLS(u) {
+                u = real.url; fmt = real.format
+            } else if let m = await GDSource.resolve(song: song, br: 320), m.format != "m3u8" {
+                // 退而求其次：要一条直链 mp3
+                u = m.url; fmt = m.format; srcBR = m.bitrate
             } else {
                 message = "《\(song.title)》兜底源解析失败"
                 return
@@ -105,6 +102,26 @@ final class DownloadStore: ObservableObject {
         } catch {
             message = "下载失败：\(error.localizedDescription)"
         }
+    }
+
+    /// 网易式伪 m3u8（单段）解出真实音频直链：容忍 \r 行尾、相对地址、需转义字符。
+    /// 真·多段 HLS 单文件不可靠，返回 nil 走 320k 直链兜底。
+    private static func unwrapHLS(_ url: URL) async -> (url: URL, format: String)? {
+        guard let (data, resp) = try? await URLSession.shared.data(from: url),
+              (resp as? HTTPURLResponse)?.statusCode == 200,
+              let text = String(data: data, encoding: .utf8) else { return nil }
+        let segs = text.split(whereSeparator: { $0.isNewline })
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .filter { !$0.isEmpty && !$0.hasPrefix("#") }
+        guard segs.count == 1 else { return nil }
+        var seg = URL(string: segs[0], relativeTo: url)?.absoluteURL
+        if seg == nil, let enc = segs[0].addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed) {
+            seg = URL(string: enc, relativeTo: url)?.absoluteURL
+        }
+        guard let audio = seg else { return nil }
+        let ext = audio.pathExtension.lowercased()
+        let fmt = ["mp3", "m4a", "flac", "wav"].contains(ext) ? ext : "mp3"
+        return (audio, fmt)
     }
 
     func delete(_ record: DownloadRecord) {
