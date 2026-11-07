@@ -21,9 +21,18 @@ struct DownloadsView: View {
                         Section {
                             ForEach(Array(store.records.enumerated()), id: \.element.id) { i, rec in
                                 row(rec, i)
+                                    .swipeActions(edge: .trailing) {
+                                        Button(role: .destructive) {
+                                            store.delete(rec)
+                                        } label: {
+                                            Label("删除", systemImage: "trash")
+                                        }
+                                    }
                             }
                         } header: {
                             Text("本地歌曲 · \(store.records.count) 首")
+                        } footer: {
+                            Text("向左滑动出现“删除”按钮。")
                         }
                     }
                     .listStyle(.plain)
@@ -51,21 +60,18 @@ struct DownloadsView: View {
                     Text(sizeText(rec.bytes)).font(.caption2).foregroundStyle(.tertiary)
                 }
             }
-            Spacer()
+            Spacer(minLength: 4)
             Button {
                 LyricPresenter.shared.open(rec.song)
             } label: {
-                Image(systemName: "text.bubble").foregroundStyle(.secondary)
+                Image(systemName: "text.bubble").font(.body).foregroundStyle(.secondary)
+                    .frame(width: 34, height: 40).contentShape(Rectangle())
             }
             Button {
                 PlayerManager.shared.playQueue(store.records.map { $0.song }, at: i, from: "本地下载")
             } label: {
                 Image(systemName: "play.circle.fill").font(.title2)
-            }
-            Button(role: .destructive) {
-                store.delete(rec)
-            } label: {
-                Image(systemName: "trash").foregroundStyle(.secondary)
+                    .frame(width: 40, height: 44).contentShape(Rectangle())
             }
         }
         .contentShape(Rectangle())
