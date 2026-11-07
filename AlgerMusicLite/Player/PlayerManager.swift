@@ -205,11 +205,20 @@ final class PlayerManager: ObservableObject {
                 if let play = lower {
                     self.replaceItem(with: play.url, song: song)
                 } else {
-                    self.giveUpOn(song)
+                    await self.fallbackOrGiveUp(song, gen: gen)
                 }
             } else {
-                self.giveUpOn(song)
+                await self.fallbackOrGiveUp(song, gen: gen)
             }
+        }
+    }
+
+    /// 官方源取不到（典型：非 VIP 播 VIP 歌）→ GD音乐台多源兜底（与 Alger 一致）
+    private func fallbackOrGiveUp(_ song: Song, gen: Int) async {
+        if let m = await GDSource.resolve(song: song), gen == loadGen {
+            replaceItem(with: m.url, song: song)
+        } else if gen == loadGen {
+            giveUpOn(song)
         }
     }
 

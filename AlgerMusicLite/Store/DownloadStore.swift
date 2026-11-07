@@ -66,18 +66,39 @@ final class DownloadStore: ObservableObject {
         // 先试无损/超品，失败降级标准（免费用户可播的最高档）
         var play = try? await NCMClient.shared.songURL(id: id, level: "exhigh")
         if play == nil { play = try? await NCMClient.shared.songURL(id: id, level: "higher") }
-        guard let p = play else {
+        // 官方源无果（典型：VIP 歌）→ GD音乐台兜底，与播放路径一致
+        var srcURL = play?.url, srcFormat = play?.format, srcBR = play?.bitrate
+        if srcURL == nil, let m = await GDSource.resolve(song: song) {
+            srcURL = m.url; srcFormat = m.format; srcBR = m.bitrate
+        }
+        guard let u0 = srcURL, let fmt0 = srcFormat else {
             message = "《\(song.title)》无免费下载源（可能需要 VIP/登录）"
             return
         }
+        // 兜底源可能给 m3u8（网易的单段 HLS 伪列表）：解出真实音频直链再落盘
+        var u = u0, fmt = fmt0
+        if fmt == "m3u8" {
+            if let (data, _) = try? await URLSession.shared.data(from: u),
+               let text = String(data: data, encoding: .utf8),
+               let line = text.split(separator: "\n").map({ $0.trimmingCharacters(in: .whitespaces) })
+                   .first(where: { !$0.isEmpty && !$0.hasPrefix("#") }),
+               let audio = URL(string: line) {
+                u = audio
+                let ext = audio.pathExtension.lowercased()
+                fmt = ["mp3", "m4a", "flac", "wav"].contains(ext) ? ext : "mp3"
+            } else {
+                message = "《\(song.title)》兜底源解析失败"
+                return
+            }
+        }
         do {
-            let (tmp, _) = try await URLSession.shared.download(from: p.url)
-            let fileName = "\(id).\(p.format)"
+            let (tmp, _) = try await URLSession.shared.download(from: u)
+            let fileName = "\(id).\(fmt)"
             let dst = dir.appendingPathComponent(fileName)
             try? FileManager.default.removeItem(at: dst)
             try FileManager.default.moveItem(at: tmp, to: dst)
             let size = (try? dst.resourceValues(forKeys: [.fileSizeKey]))?.fileSize ?? 0
-            let rec = DownloadRecord(song: song, file: fileName, bytes: size, br: p.bitrate, date: Date())
+            let rec = DownloadRecord(song: song, file: fileName, bytes: size, br: srcBR, date: Date())
             records.insert(rec, at: 0)
             persist()
             message = "已下载《\(song.title)》"
